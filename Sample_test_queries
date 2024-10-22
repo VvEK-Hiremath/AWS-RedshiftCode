@@ -1,0 +1,44 @@
+SELECT firstname, lastname, total_quantity 
+FROM (SELECT buyerid, sum(qtysold) total_quantity
+        FROM  sales
+        GROUP BY buyerid
+        ORDER BY total_quantity desc limit 10) Q, users
+WHERE Q.buyerid = userid
+ORDER BY Q.total_quantity desc;
+
+--results
+firstname | lastname | total_quantity 
+-----------+----------+----------------
+ Jerry     | Nichols  |             67
+ Kameko    | Bowman   |             64
+ Armando   | Lopez    |             64
+ Kellie    | Savage   |             63
+ Herrod    | Sparks   |             60
+ Rhona     | Sweet    |             60
+ Kadeem    | Blair    |             60
+ Penelope  | Merritt  |             60
+ Deborah   | Barber   |             60
+ Malachi   | Hayden   |             60
+
+SELECT eventname, total_price 
+FROM (SELECT eventid, total_price, ntile(1000) over(order by total_price desc) as percentile 
+      FROM (SELECT eventid, sum(pricepaid) total_price
+             FROM sales
+             GROUP BY eventid)) Q, event E
+       WHERE Q.eventid = E.eventid
+       AND percentile = 1
+ORDER BY total_price desc;
+
+--results
+ eventname       | total_price 
+----------------------+-------------
+ Adriana Lecouvreur   |    51846.00
+ Janet Jackson        |    51049.00
+ Phantom of the Opera |    50301.00
+ The Little Mermaid   |    49956.00
+ Citizen Cope         |    49823.00
+ Sevendust            |    48020.00
+ Electra              |    47883.00
+ Mary Poppins         |    46780.00
+ Live                 |    46661.00
+
